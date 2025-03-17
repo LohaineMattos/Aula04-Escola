@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Aluno{
+  ra String @id @db.VarChar(10)
+  nome String @db.VarChar(100)
+  nascto DateTime? @db.Date
+  matriculas Matricula[]
+}
+
+model Professor{
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(100)
+  especialidade String @db.VarChar(100)
+  disciplinas Disciplina[]
+}
+
+model Turma{
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(50)
+  ano Int
+  disciplinas Disciplina[]
+}
+
+model Disciplina{
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(100)
+  turma Int
+  professor Int
+  possui Turma @relation(fields: [turma], references: [id])
+  leciona Professor @relation(fields: [professor], references: [id])
+  matriculas Matricula[]
+}
+
+model Matricula{
+  id Int @id @default(autoincrement())
+  aluno String
+  disciplina Int
+  data DateTime @db.Date @default(now())
+  faz Aluno @relation(fields: [aluno], references: [ra])
+  contem Disciplina @relation(fields: [disciplina], references: [id])
+}
